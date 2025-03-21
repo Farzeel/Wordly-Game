@@ -6,6 +6,7 @@ import { words } from "./utils/words";
 import Instruction from "./components/instruction";
 import GameNavbar from "./components/Navbar";
 import Fireworks from "./components/Fireworks";
+import Keyboard from "./components/keyboard";
 
 const App = () => {
   const [playerName, setPlayerName] = useState(Cookies.get("playerName") || "");
@@ -104,67 +105,124 @@ const App = () => {
   }
 }, [isGameOver]); 
 
+const handleKeyDown = (event) => {
+  if (timer <= 0) return
+  if (isGameOver) return;
+     const {key} = event
+  console.log("object")
+  if (key === "Backspace") {
+    if (activeCell.col > 0)
+      setActiveCell({ ...activeCell, col: activeCell.col - 1 });
+    setCurrentGuess(currentGuess.slice(0, -1));
+  } else if (key.match(/^[a-zA-Z]$/) && currentGuess.length < 5) {
+
+    if (activeCell.col < 4)
+      setActiveCell({ ...activeCell, col: activeCell.col + 1 });
+    setCurrentGuess((prevGuess) => prevGuess + event.key.toUpperCase());
+  } else if (key === "Enter" && currentGuess.length === 5 ) {
+   
+    
+      // Save the current guess into the guesses array
+      const newGuesses = [...guesses];
+      newGuesses[currentRow] = currentGuess;
+      setGuesses(newGuesses);
+      console.log({guesses})
+      
+      // Generate feedback for the current guess
+      const newFeedback = getFeedback(currentGuess, currentWord);
+      const newFeedbacks = [...feedbacks];
+      newFeedbacks[currentRow] = newFeedback;
+      setFeedbacks(newFeedbacks);
+    
+     // Trigger feedback animation
+     setAnimateFeedback(true);
+     
+     if (currentGuess === currentWord) {
+      setCurrentRow(currentRow + 1);
+      setLastComparison(currentGuess)
+      setCurrentGuess("");
+      setIsGameOver(true);
+      return
+    }
+
+
+    if (currentRow >= 5) {
+      setCurrentRow(currentRow + 1);
+      setIsGameOver(true);
+      return;
+    }
+
+
+
+    // Move to the next row
+  
+    setCurrentRow(currentRow + 1);
+    setCurrentGuess(""); 
+    setActiveCell({ row: currentRow +1, col: 0 }); 
+  
+}
+};
 
   useEffect(() => {
 
 
-    const handleKeyDown = (event) => {
-      if (timer <= 0) return
-      if (isGameOver) return;
+    // const handleKeyDown = (event) => {
+    //   if (timer <= 0) return
+    //   if (isGameOver) return;
          
-      console.log("object")
-      if (event.key === "Backspace") {
-        if (activeCell.col > 0)
-          setActiveCell({ ...activeCell, col: activeCell.col - 1 });
-        setCurrentGuess(currentGuess.slice(0, -1));
-      } else if (event.key.match(/^[a-zA-Z]$/) && currentGuess.length < 5) {
+    //   console.log("object")
+    //   if (event.key === "Backspace") {
+    //     if (activeCell.col > 0)
+    //       setActiveCell({ ...activeCell, col: activeCell.col - 1 });
+    //     setCurrentGuess(currentGuess.slice(0, -1));
+    //   } else if (event.key.match(/^[a-zA-Z]$/) && currentGuess.length < 5) {
 
-        if (activeCell.col < 4)
-          setActiveCell({ ...activeCell, col: activeCell.col + 1 });
-        setCurrentGuess((prevGuess) => prevGuess + event.key.toUpperCase());
-      } else if (event.key === "Enter" && currentGuess.length === 5 ) {
+    //     if (activeCell.col < 4)
+    //       setActiveCell({ ...activeCell, col: activeCell.col + 1 });
+    //     setCurrentGuess((prevGuess) => prevGuess + event.key.toUpperCase());
+    //   } else if (event.key === "Enter" && currentGuess.length === 5 ) {
        
         
-          // Save the current guess into the guesses array
-          const newGuesses = [...guesses];
-          newGuesses[currentRow] = currentGuess;
-          setGuesses(newGuesses);
-          console.log({guesses})
+    //       // Save the current guess into the guesses array
+    //       const newGuesses = [...guesses];
+    //       newGuesses[currentRow] = currentGuess;
+    //       setGuesses(newGuesses);
+    //       console.log({guesses})
           
-          // Generate feedback for the current guess
-          const newFeedback = getFeedback(currentGuess, currentWord);
-          const newFeedbacks = [...feedbacks];
-          newFeedbacks[currentRow] = newFeedback;
-          setFeedbacks(newFeedbacks);
+    //       // Generate feedback for the current guess
+    //       const newFeedback = getFeedback(currentGuess, currentWord);
+    //       const newFeedbacks = [...feedbacks];
+    //       newFeedbacks[currentRow] = newFeedback;
+    //       setFeedbacks(newFeedbacks);
         
-         // Trigger feedback animation
-         setAnimateFeedback(true);
+    //      // Trigger feedback animation
+    //      setAnimateFeedback(true);
          
-         if (currentGuess === currentWord) {
-          setCurrentRow(currentRow + 1);
-          setLastComparison(currentGuess)
-          setCurrentGuess("");
-          setIsGameOver(true);
-          return
-        }
+    //      if (currentGuess === currentWord) {
+    //       setCurrentRow(currentRow + 1);
+    //       setLastComparison(currentGuess)
+    //       setCurrentGuess("");
+    //       setIsGameOver(true);
+    //       return
+    //     }
 
 
-        if (currentRow >= 5) {
-          setCurrentRow(currentRow + 1);
-          setIsGameOver(true);
-          return;
-        }
+    //     if (currentRow >= 5) {
+    //       setCurrentRow(currentRow + 1);
+    //       setIsGameOver(true);
+    //       return;
+    //     }
 
 
 
-        // Move to the next row
+    //     // Move to the next row
       
-        setCurrentRow(currentRow + 1);
-        setCurrentGuess(""); 
-        setActiveCell({ row: currentRow +1, col: 0 }); 
+    //     setCurrentRow(currentRow + 1);
+    //     setCurrentGuess(""); 
+    //     setActiveCell({ row: currentRow +1, col: 0 }); 
       
-    }
-    };
+    // }
+    // };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -297,13 +355,13 @@ const App = () => {
           {guesses.map((_, rowIndex) => {
             const rowLetters = rowIndex === currentRow ? currentGuess : guesses[rowIndex];
             return (
-              <div key={rowIndex} className="flex gap-2 mb-2">
+              <div key={rowIndex} className="flex gap-1 mb-1 md:gap-2 md:mb-2">
                 {Array.from({ length: 5 }).map((_, colIndex) => {
                   const details = checkDetails(rowIndex, activeCell, rowLetters, colIndex);
                   return (
                     <span
                       key={colIndex}
-                      className={`w-16 h-16 flex items-center justify-center text-2xl font-bold border-2 rounded-lg transition-all duration-300 ${
+                      className={`w-10 h-10 md:w-16 md:h-16 flex items-center justify-center text-xl md:text-2xl font-bold border-2 rounded-lg transition-all duration-300 ${
                         details.hasLetter ? "border-gray-400" : "border-gray-600"
                       } ${
                         details.shouldAnimate ? "animate-flip" : ""
@@ -344,6 +402,9 @@ const App = () => {
             </div>
           )}
           {win && <Fireworks show={win} />}
+          <div className="md:hidden">
+             <Keyboard onKeyPress={handleKeyDown} />
+          </div>
         </div>
       )}
     </>
