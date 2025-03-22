@@ -342,7 +342,7 @@ const handleKeyDown = (event) => {
           <Instruction setDisplayImg={setDisplayImg} />
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white w-full px-4 overflow-x-hidden">
           <p className="text-green-600">Enter letters using your keyboard.</p>
           {timer > 0 ? (
                      <div className="flex items-center space-x-2 mb-2">

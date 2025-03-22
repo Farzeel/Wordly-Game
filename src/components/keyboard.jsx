@@ -1,4 +1,4 @@
-// Keyboard.js
+
 import React from "react";
 
 const Keyboard = ({ onKeyPress }) => {
@@ -9,14 +9,14 @@ const Keyboard = ({ onKeyPress }) => {
   ];
 
   return (
-    <div className="flex flex-col gap-1 mt-4">
+    <div className="w-full px-2 mt-4"> 
       {rows.map((row, rowIndex) => (
         <div key={rowIndex} className="flex justify-center gap-1">
           {row.map((key) => (
             <button
               key={key}
-              onClick={() => onKeyPress({key})}
-              className={`px-3 py-2 rounded-md bg-gray-700 text-white ${
+              onClick={() => onKeyPress({ key })}
+              className={`flex-1 py-2 px-1 rounded-md bg-gray-700 text-white mx-0.5 my-1 ${ 
                 key === "Enter" || key === "Backspace" ? "px-4" : ""
               }`}
             >
