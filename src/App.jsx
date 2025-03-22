@@ -106,8 +106,8 @@ const App = () => {
 }, [isGameOver]); 
 
 const handleKeyDown = (event) => {
-  if (timer <= 0) return
-  if (isGameOver) return;
+  if (timer <= 0 || isGameOver || !play) return
+ 
      const {key} = event
   console.log("object")
   if (key === "Backspace") {
@@ -226,7 +226,7 @@ const handleKeyDown = (event) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentGuess,currentRow,timer]);
+  }, [currentGuess,currentRow,timer,play]);
   
   useEffect(() => {
     
